@@ -48,8 +48,8 @@ class Structure
                 if (!this.__check_congratulations(left_state)) {
                     if (this.current.get_boat() === "left") {
                         Object.keys(left_state).map(key => {
-                            let TempLeftState = JSON.parse(JSON.stringify(left_state));
-                            let TempRightState = JSON.parse(JSON.stringify(right_state));
+                            let TempLeftState = Object.assign({}, left_state);//JSON.parse(JSON.stringify(left_state));
+                            let TempRightState = Object.assign({}, right_state);//JSON.parse(JSON.stringify(right_state));
                             TempRightState[key] = true;
                             delete TempLeftState[key];
                             if (this.__check_the_opportunity_move(TempLeftState)) {
