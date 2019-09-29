@@ -45,70 +45,72 @@ class Structure
             if (amount_ways < 1) {
                 const left_state = this.current.get_left_state();
                 const right_state = this.current.get_right_state();
-                if (this.current.get_boat() === "left") {
-                    Object.keys(left_state).map(key => {
-                        let TempLeftState = JSON.parse(JSON.stringify(left_state));
-                        let TempRightState = JSON.parse(JSON.stringify(right_state));
-                        TempRightState[key] = true;
-                        delete TempLeftState[key];
-                        if (this.__check_the_opportunity_move(TempLeftState)) {
-                            if (!this.Story.check_up_on_repetition(TempRightState)) {
-                                this.current.add_children(new Node(
-                                    this.current,
-                                    TempLeftState,
-                                    TempRightState,
-                                    "right",
-                                    "[" + key + "] => "
-                                ));
-                                this.Story.register_state(TempRightState);
+                if (!this.__check_congratulations(left_state)) {
+                    if (this.current.get_boat() === "left") {
+                        Object.keys(left_state).map(key => {
+                            let TempLeftState = JSON.parse(JSON.stringify(left_state));
+                            let TempRightState = JSON.parse(JSON.stringify(right_state));
+                            TempRightState[key] = true;
+                            delete TempLeftState[key];
+                            if (this.__check_the_opportunity_move(TempLeftState)) {
+                                if (!this.Story.check_up_on_repetition(TempRightState)) {
+                                    this.current.add_children(new Node(
+                                        this.current,
+                                        TempLeftState,
+                                        TempRightState,
+                                        "right",
+                                        "[" + key + "] => "
+                                    ));
+                                    this.Story.register_state(TempRightState);
+                                }
                             }
-                        }
-                    });
-                } else {
-                    Object.keys(right_state).map(key => {
-                        let TempLeftState = JSON.parse(JSON.stringify(left_state));
-                        let TempRightState = JSON.parse(JSON.stringify(right_state));
-                        TempLeftState[key] = true;
-                        delete TempRightState[key];
-                        if (this.__check_the_opportunity_move(TempRightState)) {
-                            if (!this.Story.check_up_on_repetition(TempRightState)){
-                                this.current.add_children(new Node(
-                                    this.current,
-                                    TempLeftState,
-                                    TempRightState,
-                                    "left",
-                                    " <= [" + key + "]"
-                                ));
-                                this.Story.register_state(TempRightState);
+                        });
+                    } else {
+                        Object.keys(right_state).map(key => {
+                            let TempLeftState = JSON.parse(JSON.stringify(left_state));
+                            let TempRightState = JSON.parse(JSON.stringify(right_state));
+                            TempLeftState[key] = true;
+                            delete TempRightState[key];
+                            if (this.__check_the_opportunity_move(TempRightState)) {
+                                if (!this.Story.check_up_on_repetition(TempRightState)) {
+                                    this.current.add_children(new Node(
+                                        this.current,
+                                        TempLeftState,
+                                        TempRightState,
+                                        "left",
+                                        " <= [" + key + "]"
+                                    ));
+                                    this.Story.register_state(TempRightState);
+                                }
                             }
+                        });
+                    }
+                    if (this.__check_the_opportunity_move(left_state)
+                        &&
+                        this.__check_the_opportunity_move(right_state)
+                    ) {
+                        let Parent = this.current.get_parent();
+                        if (right_state !== Parent.get_right_state()
+                            ||
+                            left_state !== Parent.get_left_state()
+                        ) {
+                            let temp_boat = null;
+                            let temp_move = null;
+                            if (this.current.get_boat() === "left") {
+                                temp_boat = "right";
+                                temp_move = "[] => ";
+                            } else {
+                                temp_boat = "left";
+                                temp_move = "<= []";
+                            }
+                            this.current.add_children(new Node(
+                                this.current,
+                                left_state,
+                                right_state,
+                                temp_boat,
+                                temp_move
+                            ));
                         }
-                    });
-                }
-                if (this.__check_the_opportunity_move(left_state)
-                    &&
-                    this.__check_the_opportunity_move(right_state)
-                ) {
-                    let Parent = this.current.get_parent();
-                    if (right_state !== Parent.get_right_state()
-                        ||
-                        left_state !== Parent.get_left_state()
-                    ){
-                        let temp_boat = null;
-                        let temp_move = null;
-                        if (this.current.get_boat() === "left") {
-                            temp_boat = "right";
-                            temp_move = "[] => ";
-                        } else {
-                            temp_boat = "left";
-                            temp_move = "<= []";
-                        }
-                        this.current.add_children(new Node(
-                            this.current,
-                            left_state,
-                            right_state,
-                            temp_boat,
-                            temp_move
-                        ));
                     }
                 }
             }
